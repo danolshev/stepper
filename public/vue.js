@@ -1,11 +1,8 @@
-// вы можете как угодно изменять программу и код
-// добавлять любые переменные и модели
-// ваша задача реализовать так, как показано на видео, чтобы оно работало
-
 const App = {
   data() {
     return {
-      activeIndex: 0, // то, что позволяет определить текущий активный шаг
+      activeIndex: 0,
+      resetAvailable: false,
       steps: [
         {title: 'Основы', text: 'В блоке вы познакомитесь со всеми основами Vue.js на практике. На протяжении блока мы напишем реактивное приложение, в процессе разработки которого разберем вся базу фреймворка.'},
         {title: 'Компоненты', text: 'Один из самых важных блоков в курсе, где вы узнаете все о компонентах. В блоке мы напишем 2 разных приложения и создадим более 5 различных UI компонентов как в реальной разработке. Блок расскажет про абсолютно все составляющие, которые есть в компонентах: взаимодействие, slots, асинхронные и динамические компоненты и тонна примеров.'},
@@ -17,23 +14,44 @@ const App = {
   },
   methods: {
     prev() {
-      // когда нажимаем кнопку назад
+      if (this.disabledBackButton) return
+      this.activeIndex = --this.activeIndex
     },
     reset() {
-      // начать заново
+      this.activeIndex = 0
+      this.resetAvailable = false
     },
     nextOfFinish() {
-      // кнопка вперед или закончить
+      if (this.lastStep) {
+        this.resetAvailable = true
+        return false
+      }
+      this.activeIndex = ++this.activeIndex
+      return true
     },
     setActive(idx) {
-      // когда нажимаем на определенный шаг
+      if (this.resetAvailable) {
+        return
+      }
+      this.activeIndex = idx
     }
   },
   computed: {
-    // тут стоит определить несколько свойств:
-    // 1. текущий выбранный шаг
-    // 2. выключена ли кнопка назад
-    // 3. находимся ли мы на последнем шаге
+    currentStep() {
+      return this.activeIndex
+    },
+    currentText() {
+      return this.steps[this.currentStep].text
+    },
+    showReset() {
+      return this.resetAvailable
+    },
+    disabledBackButton() {
+      return this.activeIndex === 0
+    },
+    lastStep() {
+      return this.steps.length - 1 === this.activeIndex
+    }
   }
 }
 
